@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <title>Animal Buttons</title>
+
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body>
+    <div class="container-fluid">
+      <button data-topics="babies" id="btn">Babies</button>
+      <button type="button" id="submit" class="btn btn-primary">Submit</button>
+      <div id="gif-here"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <script type="text/javascript">
+      //globals..
+      var topics = ["babies", " puppies"];
+
+      //on click for buttons.
+      $("button").on("click", function() {
+        var topic = $(this).attr("data-topic");
+        //limiting the search to 10 items and rating g
+        var queryURL =
+          "https://api.giphy.com/v1/gifs/search?q=" +
+          topic +
+          "api_key=gQulUsz8qMDpnBm5qAvsx8DRnwcc2SUh&limit=10&rating=g";
+
+        $.ajax({
+          url: queryURL,
+          method: "GET"
+        }).then(function(response) {
+          console.log(response);
+          //save the response and the rating  in a variable
+          var results = response.data;
+          var rating = results[i].rating;
+
+          for (var i = 0; i < results.length; i++) {
+            //if the rating of is not r or pg 13, then show them.
+            if (results[i].rating !== "r" && results[i].rating !== "pg-13") {
+              //create new div to store new images returned from the results
+              var topicsDiv = $("<div>");
+              //create a p tage for the rating
+              var p = $("<p>").text("Rating: " + results[i].rating);
+              //create img tags where the images will go
+              var topicImage = $("<img>");
+              
+              topicImage.attr("src", results[i].images.fixed_height.url);
+              $("#gif-here").append(p);
+              $("#gif-here").append(topicImage);
+            }
+          }
+        });
+
+        // for ( var i = 0; i < topics.length; i++){
+        //     var $newBtn = $('<button>' + topics[i]);
+        //     $newBtn.addClass('topic-btn');
+        //     $newBtn.attr('data-name',btn);
+        //     $('#gif-here').append($newBtn);
+        // };
+        // console.log(topics);
+      });
+    </script>
+  </body>
+</html>
