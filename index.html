@@ -18,25 +18,48 @@
   </head>
   <body>
     <div class="container-fluid">
-      <button data-topics="babies" id="btn">Babies</button>
-      <button type="button" id="submit" class="btn btn-primary">Submit</button>
+        <div class="row">
+            <div id='newButton'></div>
+        </div>
+
+        <div class="row">
+          <input type='text'id='input' value='input'>
+          <button type="button" id="submit" class="btn btn-primary">More giphy</button>
+        </div>
+
+     
       <div id="gif-here"></div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
     <script type="text/javascript">
-      //globals..
-      var topics = ["babies", " puppies"];
+      //------------GLOBALS----------
 
-      //on click for buttons.
+      var topics = ["babies", " puppies","epic fails","workplace"];
+
+      //using the for loop to create buttons. if placed inside the onclick function, the buttons would be emptied because of the .empty();
+      for ( var i = 0; i < topics.length; i++){
+            var $newBtn = $('<button>' + topics[i]+ '</button>');
+            $newBtn.attr('data-topic',topics[i]);
+            $('#newButton').append($newBtn);
+        };
+        console.log(topics);
+
+
+      //---------------on click for buttons------------------.
       $("button").on("click", function() {
+        $('#gif-here').empty();
+
         var topic = $(this).attr("data-topic");
+        
+        const CORS_ANYWHERE_HOST = 'https://cors-anywhere.herokuapp.com/';
+
         //limiting the search to 10 items and rating g
-        var queryURL =
+        var queryURL = 
           "https://api.giphy.com/v1/gifs/search?q=" +
           topic +
-          "api_key=gQulUsz8qMDpnBm5qAvsx8DRnwcc2SUh&limit=10&rating=g";
+          "&api_key=gQulUsz8qMDpnBm5qAvsx8DRnwcc2SUh&limit=10&rating=g";
 
         $.ajax({
           url: queryURL,
@@ -45,33 +68,92 @@
           console.log(response);
           //save the response and the rating  in a variable
           var results = response.data;
-          var rating = results[i].rating;
-
+          
           for (var i = 0; i < results.length; i++) {
             //if the rating of is not r or pg 13, then show them.
             if (results[i].rating !== "r" && results[i].rating !== "pg-13") {
               //create new div to store new images returned from the results
               var topicsDiv = $("<div>");
-              //create a p tage for the rating
+            
+              //create a p tag for the rating
               var p = $("<p>").text("Rating: " + results[i].rating);
               //create img tags where the images will go
               var topicImage = $("<img>");
-              
-              topicImage.attr("src", results[i].images.fixed_height.url);
+              topicImage.addClass('gif');
+              // topicImage.attr({ -----------NOT WORKING
+              //   'src': results.images.fixed_height.url,
+              //   'data-still': results.images.fixed_height_still.url,
+              //   'data-animate': results.images.origial.url,
+              //   'data-state': 'still',
+              //   'class': 'gif'
+              //   });
+              }
+              topicImage.attr("src",results[i].images.fixed_height.url);
+               
               $("#gif-here").append(p);
               $("#gif-here").append(topicImage);
-            }
-          }
-        });
+            };
 
-        // for ( var i = 0; i < topics.length; i++){
-        //     var $newBtn = $('<button>' + topics[i]);
-        //     $newBtn.addClass('topic-btn');
-        //     $newBtn.attr('data-name',btn);
-        //     $('#gif-here').append($newBtn);
-        // };
-        // console.log(topics);
+        // PAUSING THE  GIPHY. NOT WORKING
+        $('.gif').on('click', function(){
+          var state = $(this).attr('data-state');
+          // NOT WORKING
+          topicImage.attr({
+                // 'src': results.images.fixed_height_still.url,
+                "data-still": results.images.fixed_height_still.url,
+                "data-animate": results.images.fixed_height.url,
+                "data-state": "still",
+                });   
+                console.log('hello')
+                console.log(state.attr('class'))
+          if (state === 'still' ) {
+            $(this).attr('src',$(this).attr('data-animate'));
+            $(this).attr('data-state', 'animate');
+          }else {
+            $(this).attr('src',$(this).attr('data-still'));
+            $(this).attr('data-state', 'still');
+          }
+          
+        });
       });
+      });
+
+      // ---------SEARCH--------------
+      $('#submit').on('click', function(){
+        $('#gif-here').empty();
+          event.preventDefault();
+          var search = $('#input').val().trim();
+          const CORS_ANYWHERE_HOST = 'https://cors-anywhere.herokuapp.com/';
+
+        //limiting the search to 10 items and rating g
+          var queryURL = 
+          "https://api.giphy.com/v1/gifs/search?q=" +
+          search +
+          "&api_key=gQulUsz8qMDpnBm5qAvsx8DRnwcc2SUh&limit=10&rating=g";
+        console.log(search);
+          $.ajax({
+          url: queryURL,
+          method: "GET"
+          }).then(function(response) {
+          console.log(response);
+          //save the response and the rating  in a variable
+          var results = response.data;
+
+            if (results[i].rating !== "r" && results[i].rating !== "pg-13") {
+              //create new div to store new images returned from the results
+              var searchDiv = $("<div>");
+            
+              //create a p tag for the rating
+              var p1 = $("<p>").text("Rating: " + results[i].rating);
+              //create img tags where the images will go
+              var searchImage = $("<img>");
+            }
+              searchImage.attr("src",results[i].images.fixed_height.url); 
+              $("#gif-here").append(p1);
+              $("#gif-here").append(searchImage);
+            })
+        });
+    
     </script>
   </body>
 </html>
