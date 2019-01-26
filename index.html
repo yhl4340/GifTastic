@@ -6,7 +6,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
-    <title>Animal Buttons</title>
+    <title>Giphy Buttons</title>
 
     <!-- Bootstrap CSS -->
     <link
@@ -15,20 +15,59 @@
       integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
       crossorigin="anonymous"
     />
+
+    <style>
+      *{
+        font-size:18px;
+        color:#5befff;
+        background:black;
+      }
+      h1{
+        background:none;
+        text-align: center;
+        /* text-shadow: 1px 1px 2px red, 0 0 1em blue, 0 0 0.2em blue; */
+      }
+      .jumbotron{
+        background:#ff5159;
+        color:#9f4eff;
+      }
+       div button {
+        border-radius:5px;
+        padding:8px;
+      }
+      input[type = text]{
+        width:100%;
+        padding:5px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+      }
+       #submit {
+        background:#42ffaa;
+        color:black;
+      }
+     
+    </style>
+
   </head>
   <body>
     <div class="container-fluid">
+        <div class="jumbotron">
+          <h1>Giphy Fun!!!</h1>
+        </div>
         <div class="row">
-            <div id='newButton'></div>
+          <div class="col-lg-1"></div>
+          <div id='new-button' class="col-lg-auto"></div>
+          <div class="col-lg-1"></div>
+          <div class="col-lg-3 ">
+          <input type='text' id='input' >
+          <button type="button" id="submit" class="btn btn-primary">More Giphy</button>
+          </div>
         </div>
 
         <div class="row">
-          <input type='text'id='input' value='input'>
-          <button type="button" id="submit" class="btn btn-primary">More giphy</button>
+          <div class="col-lg-1"></div>
+          <div id="gif-here" class="float-right"></div>
         </div>
-
-     
-      <div id="gif-here"></div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -36,13 +75,13 @@
     <script type="text/javascript">
       //------------GLOBALS----------
 
-      var topics = ["babies", " puppies","epic fails","workplace"];
+      var topics = ["babies", " puppies","epic fails","workplace", "game of thrones"];
 
       //using the for loop to create buttons. if placed inside the onclick function, the buttons would be emptied because of the .empty();
       for ( var i = 0; i < topics.length; i++){
             var $newBtn = $('<button>' + topics[i]+ '</button>');
             $newBtn.attr('data-topic',topics[i]);
-            $('#newButton').append($newBtn);
+            $('#new-button').append($newBtn);
         };
         console.log(topics);
 
@@ -51,12 +90,11 @@
       $("button").on("click", function() {
         $('#gif-here').empty();
 
-        var topic = $(this).attr("data-topic");
-        
+        var topic = $(this).attr("data-topic"); 
         const CORS_ANYWHERE_HOST = 'https://cors-anywhere.herokuapp.com/';
 
         //limiting the search to 10 items and rating g
-        var queryURL = 
+        var queryURL = CORS_ANYWHERE_HOST + 
           "https://api.giphy.com/v1/gifs/search?q=" +
           topic +
           "&api_key=gQulUsz8qMDpnBm5qAvsx8DRnwcc2SUh&limit=10&rating=g";
@@ -89,13 +127,12 @@
               //   });
               }
               topicImage.attr("src",results[i].images.fixed_height.url);
-               
               $("#gif-here").append(p);
               $("#gif-here").append(topicImage);
             };
 
         // PAUSING THE  GIPHY. NOT WORKING
-        $('.gif').on('click', function(){
+        $('#gif-here').on('click', '.gif', function(){
           var state = $(this).attr('data-state');
           // NOT WORKING
           topicImage.attr({
@@ -120,22 +157,25 @@
 
       // ---------SEARCH--------------
       $('#submit').on('click', function(){
-        $('#gif-here').empty();
+          $('#gif-here').empty();
+          $('#input').empty();
           event.preventDefault();
           var search = $('#input').val().trim();
           const CORS_ANYWHERE_HOST = 'https://cors-anywhere.herokuapp.com/';
 
-        //limiting the search to 10 items and rating g
-          var queryURL = 
+          //limiting the search to 10 items and rating g
+          var queryURL = CORS_ANYWHERE_HOST +
           "https://api.giphy.com/v1/gifs/search?q=" +
           search +
           "&api_key=gQulUsz8qMDpnBm5qAvsx8DRnwcc2SUh&limit=10&rating=g";
-        console.log(search);
+          console.log(search);
+
           $.ajax({
           url: queryURL,
           method: "GET"
           }).then(function(response) {
           console.log(response);
+
           //save the response and the rating  in a variable
           var results = response.data;
 
