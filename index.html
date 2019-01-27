@@ -17,86 +17,111 @@
     />
 
     <style>
-      *{
-        font-size:18px;
-        color:#5befff;
-        background:black;
+      * {
+        font-size: 18px;
+        color: #5befff;
+        background: black;
       }
-      h1{
-        background:none;
+      h1 {
+        background: none;
         text-align: center;
         /* text-shadow: 1px 1px 2px red, 0 0 1em blue, 0 0 0.2em blue; */
       }
-      .jumbotron{
-        background:#ff5159;
-        color:#9f4eff;
+      .jumbotron {
+        background: #ff5159;
+        color: #9f4eff;
       }
-       div button {
-        border-radius:5px;
-        padding:8px;
+      div button {
+        border-radius: 5px;
+        padding: 10px;
       }
-      input[type = text]{
-        width:100%;
-        padding:5px;
+      input[type="text"] {
+        width: 100%;
+        padding: 7px;
         margin-bottom: 10px;
         border-radius: 5px;
       }
-       #submit {
-        background:#42ffaa;
-        color:black;
+      #submit {
+        background: #42ffaa;
+        color: black;
+        margin-left:150px;
       }
-     
+      .gif {
+        width:350px;
+        height:250px;
+        
+      }
     </style>
-
   </head>
   <body>
     <div class="container-fluid">
-        <div class="jumbotron">
-          <h1>Giphy Fun!!!</h1>
-        </div>
-        <div class="row">
-          <div class="col-lg-1"></div>
-          <div id='new-button' class="col-lg-auto"></div>
-          <div class="col-lg-1"></div>
-          <div class="col-lg-3 ">
-          <input type='text' id='input' >
-          <button type="button" id="submit" class="btn btn-primary">More Giphy</button>
-          </div>
-        </div>
+      <div class="jumbotron"><h1>Giphy Fun!!!</h1></div>
 
-        <div class="row">
-          <div class="col-lg-1"></div>
-          <div id="gif-here" class="float-right"></div>
+      <div class="row">
+        <div class="col-md-1"></div>
+        <div id="new-button" class="col-md-auto"></div>
+        <div class="col-lg-1"></div>
+      </div>
+
+      <div class="row justify-content-center">
+       
+        <div class="col-lg-4">
+          <input type="text" id="input" />
+          <button type="button" id="submit" class="btn btn-primary">
+            More Giphy
+          </button>
         </div>
+       
+      </div>
+
+      <div class="row">
+        <div class="col-md-4"></div>
+        <div id="gif-here" ></div>
+        <div class="col-md-2"></div>
     </div>
+
+    <div class="row"></div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
     <script type="text/javascript">
       //------------GLOBALS----------
 
-      var topics = ["babies", " puppies","epic fails","workplace", "game of thrones"];
+      var topics = [
+        "Friends",
+        "The Big Bang Theory",
+        "The Office",
+        "Fresh off the boat",
+        "Exercise fails",
+        "Seinfeld",
+        "Modern Family",
+        "The Simpsons",
+        "Curb Your Enthusiasm",
+        "30 Rock"
+      ];
 
       //using the for loop to create buttons. if placed inside the onclick function, the buttons would be emptied because of the .empty();
-      for ( var i = 0; i < topics.length; i++){
-            var $newBtn = $('<button>' + topics[i]+ '</button>');
-            $newBtn.attr('data-topic',topics[i]);
-            $('#new-button').append($newBtn);
-        };
-        console.log(topics);
+      // changed the group-button to clacc because only 1 id is allowed and therefore only one gif will be produced.
+      for (var i = 0; i < topics.length; i++) {
+        var $newBtn = $('<button class="group-button">' + topics[i] + "</button>");
+        $newBtn.attr("data-topic", topics[i]);
+        $("#new-button").append($newBtn);
+      }
+      console.log(topics);
 
-
-      //---------------on click for buttons------------------.
-      $("button").on("click", function() {
-        $('#gif-here').empty();
-
-        var topic = $(this).attr("data-topic"); 
-        const CORS_ANYWHERE_HOST = 'https://cors-anywhere.herokuapp.com/';
+      /*
+        Main AJAX call 
+      */
+      function getData(search) {
+        
+        const CORS_ANYWHERE_HOST = "https://cors-anywhere.herokuapp.com/";
+        console.log(search);
 
         //limiting the search to 10 items and rating g
-        var queryURL = CORS_ANYWHERE_HOST + 
+        var queryURL =
+          CORS_ANYWHERE_HOST +
           "https://api.giphy.com/v1/gifs/search?q=" +
-          topic +
+          search +
           "&api_key=gQulUsz8qMDpnBm5qAvsx8DRnwcc2SUh&limit=10&rating=g";
 
         $.ajax({
@@ -106,94 +131,85 @@
           console.log(response);
           //save the response and the rating  in a variable
           var results = response.data;
-          
           for (var i = 0; i < results.length; i++) {
             //if the rating of is not r or pg 13, then show them.
             if (results[i].rating !== "r" && results[i].rating !== "pg-13") {
               //create new div to store new images returned from the results
               var topicsDiv = $("<div>");
-            
               //create a p tag for the rating
               var p = $("<p>").text("Rating: " + results[i].rating);
               //create img tags where the images will go
               var topicImage = $("<img>");
-              topicImage.addClass('gif');
-              // topicImage.attr({ -----------NOT WORKING
-              //   'src': results.images.fixed_height.url,
-              //   'data-still': results.images.fixed_height_still.url,
-              //   'data-animate': results.images.origial.url,
-              //   'data-state': 'still',
-              //   'class': 'gif'
-              //   });
-              }
-              topicImage.attr("src",results[i].images.fixed_height.url);
-              $("#gif-here").append(p);
-              $("#gif-here").append(topicImage);
-            };
-
-        // PAUSING THE  GIPHY. NOT WORKING
-        $('#gif-here').on('click', '.gif', function(){
-          var state = $(this).attr('data-state');
-          // NOT WORKING
-          topicImage.attr({
-                // 'src': results.images.fixed_height_still.url,
-                "data-still": results.images.fixed_height_still.url,
-                "data-animate": results.images.fixed_height.url,
-                "data-state": "still",
-                });   
-                console.log('hello')
-                console.log(state.attr('class'))
-          if (state === 'still' ) {
-            $(this).attr('src',$(this).attr('data-animate'));
-            $(this).attr('data-state', 'animate');
-          }else {
-            $(this).attr('src',$(this).attr('data-still'));
-            $(this).attr('data-state', 'still');
+              topicImage.addClass("gif");
+              topicImage.attr({ 
+                'src': results[i].images.fixed_height_still.url,
+                'data-still': results[i].images.fixed_height_still.url,
+                'data-animate': results[i].images.fixed_height.url,
+                'data-state': 'still',
+                'class': 'gif'
+                });
+            }
+            $("#gif-here").append(p);
+            $("#gif-here").append(topicImage);
           }
-          
+
+          // // PAUSING THE  GIPHY. 
+          // $('#gif-here').on('click', '.gif', function(){
+          //   console.log('hello')
+          //   var state = $(this).attr('data-state');
+         
+         
+  
+    
+          //   if (state === 'still' ) {
+          //     $(this).attr('src',$(this).attr('data-animate'));
+          //     $(this).attr('data-state', 'animate');
+          //   }else {
+          //     $(this).attr('src',$(this).attr('data-still'));
+          //     $(this).attr('data-state', 'still');
+          //   }
+
+          // });
         });
-      });
+      }
+
+      //---------------on click for buttons------------------.
+      $(".group-button").on("click", function() {
+        $("#gif-here").empty();
+
+        var topic = $(this).attr("data-topic");
+        
+        getData(topic);
       });
 
       // ---------SEARCH--------------
-      $('#submit').on('click', function(){
-          $('#gif-here').empty();
-          $('#input').empty();
-          event.preventDefault();
-          var search = $('#input').val().trim();
-          const CORS_ANYWHERE_HOST = 'https://cors-anywhere.herokuapp.com/';
+      $("#submit").on("click", function() {
+        $("#gif-here").empty();
+        $("#input").empty();
+        event.preventDefault();
+        var search = $("#input")
+          .val()
+          .trim();
 
-          //limiting the search to 10 items and rating g
-          var queryURL = CORS_ANYWHERE_HOST +
-          "https://api.giphy.com/v1/gifs/search?q=" +
-          search +
-          "&api_key=gQulUsz8qMDpnBm5qAvsx8DRnwcc2SUh&limit=10&rating=g";
-          console.log(search);
+        getData(search); 
+      });
 
-          $.ajax({
-          url: queryURL,
-          method: "GET"
-          }).then(function(response) {
-          console.log(response);
 
-          //save the response and the rating  in a variable
-          var results = response.data;
+      // PAUSING THE  GIPHY. 
+      $('#gif-here').on('click', '.gif', function(){    
+        console.log('hello')
+        var state = $(this).attr('data-state');
 
-            if (results[i].rating !== "r" && results[i].rating !== "pg-13") {
-              //create new div to store new images returned from the results
-              var searchDiv = $("<div>");
-            
-              //create a p tag for the rating
-              var p1 = $("<p>").text("Rating: " + results[i].rating);
-              //create img tags where the images will go
-              var searchImage = $("<img>");
-            }
-              searchImage.attr("src",results[i].images.fixed_height.url); 
-              $("#gif-here").append(p1);
-              $("#gif-here").append(searchImage);
-            })
-        });
-    
+        if (state === 'still' ) {
+          $(this).attr('src',$(this).attr('data-animate'));
+          $(this).attr('data-state', 'animate');
+        }else {
+          $(this).attr('src',$(this).attr('data-still'));
+          $(this).attr('data-state', 'still');
+        }
+
+      });
+      
     </script>
   </body>
 </html>
