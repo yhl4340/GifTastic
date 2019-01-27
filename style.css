@@ -1,0 +1,35 @@
+
+      * {
+        font-size: 18px;
+        color: #5befff;
+        background: black;
+      }
+      h1 {
+        background: none;
+        text-align: center;
+        /* text-shadow: 1px 1px 2px red, 0 0 1em blue, 0 0 0.2em blue; */
+      }
+      .jumbotron {
+        background: #ff5159;
+        color: #9f4eff;
+      }
+      div button {
+        border-radius: 5px;
+        padding: 10px;
+      }
+      input[type="text"] {
+        width: 100%;
+        padding: 7px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+      }
+      #submit {
+        background: #42ffaa;
+        color: black;
+        margin-left:150px;
+      }
+      .gif {
+        width:350px;
+        height:250px;
+        
+      }
